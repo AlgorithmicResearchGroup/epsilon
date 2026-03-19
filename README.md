@@ -1,5 +1,7 @@
 # ε Epsilon
 
+![Epsilon](/image/header.png "Epsilon")
+
 Epsilon is a multi-agent AI coding system for software development and large-scale agent workflows.
 
 It can run:
