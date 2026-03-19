@@ -1,0 +1,20 @@
+{
+  "dataset": {
+    "corpus_root": "/home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet",
+    "keyword_profile": "text_llm_eval"
+  },
+  "defaults": {
+    "sample_size": 40,
+    "worker_count": 8,
+    "reduce_arity": 8,
+    "shard_count": 8,
+    "max_iterations": 14,
+    "max_runtime_seconds": 180,
+    "agent_model": "openai/gpt-5.2",
+    "max_source_chars": 14000,
+    "max_ambiguities": 24,
+    "min_year": 2022,
+    "candidate_pool_size": 300,
+    "max_scan_files": 400
+  }
+}

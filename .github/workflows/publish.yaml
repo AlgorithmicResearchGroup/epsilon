@@ -1,0 +1,112 @@
+name: Publish Docker Image to GHCR
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: Optional image name override, for example ghcr.io/org/repo
+        required: false
+        type: string
+      platforms:
+        description: Target platforms for docker buildx
+        required: false
+        default: linux/amd64
+        type: string
+      push_latest:
+        description: Also publish the latest tag
+        required: false
+        default: true
+        type: boolean
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-ghcr-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve image name
+        id: image
+        shell: bash
+        run: |
+          requested_image="${{ github.event.inputs.image || '' }}"
+          requested_platforms="${{ github.event.inputs.platforms || '' }}"
+          requested_push_latest="${{ github.event.inputs.push_latest || '' }}"
+          if [[ -n "${requested_image}" ]]; then
+            image="${requested_image}"
+          else
+            owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+            repo="$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')"
+            image="ghcr.io/${owner}/${repo}"
+          fi
+          if [[ -n "${requested_platforms}" ]]; then
+            platforms="${requested_platforms}"
+          else
+            platforms="linux/amd64"
+          fi
+          latest_enabled="false"
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/${{ github.event.repository.default_branch }}" ]]; then
+            latest_enabled="true"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${requested_push_latest}" == "true" ]]; then
+            latest_enabled="true"
+          fi
+          image="$(echo "${image}" | tr '[:upper:]' '[:lower:]')"
+          echo "value=${image}" >> "${GITHUB_OUTPUT}"
+          echo "platforms=${platforms}" >> "${GITHUB_OUTPUT}"
+          echo "latest_enabled=${latest_enabled}" >> "${GITHUB_OUTPUT}"
+          echo "Publishing image ${image}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME || github.actor }}
+          password: ${{ secrets.GHCR_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Compute Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.value }}
+          tags: |
+            type=raw,value=latest,enable=${{ steps.image.outputs.latest_enabled }}
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+          labels: |
+            org.opencontainers.image.title=Epsilon
+            org.opencontainers.image.description=Multi-agent orchestration framework
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ steps.image.outputs.platforms }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

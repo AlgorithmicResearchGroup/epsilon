@@ -132,7 +132,33 @@ Use:
 
 `sharded_queue` and `map_reduce` are intentionally manifest-backed. They are meant for explicit large-scale workloads, not free-form task decomposition.
 
-## Featured Demo
+## Featured Demos
+
+### Benchmark Scout
+
+The benchmark-scout demo turns a paper corpus into a structured benchmark dataset:
+
+1. agents read papers and extract benchmark result rows
+2. reducers detect rows that look similar but may not be truly comparable
+3. a second wave of agents adjudicates those questionable comparisons
+4. the finalizer writes benchmark JSON, CSV, and comparison judgments
+
+Run it with:
+
+```bash
+OPENAI_API_KEY=... \
+PYTHONPATH=. python examples/benchmark_scout/run_demo.py \
+  --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
+  --sample-size 40 \
+  --sample-mode random \
+  --sample-seed 17 \
+  --keyword-profile text_llm_eval \
+  --worker-count 8
+```
+
+More detail: [examples/benchmark_scout/README.md](examples/benchmark_scout/README.md)
+
+### HF Entity Graph
 
 The Hugging Face entity-graph demo shows a workload that is more useful than a simple fan-out pipeline:
 
@@ -157,5 +183,6 @@ More detail: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/READM
 ## Learn More
 
 - Technical reference: [docs/technical-reference.md](docs/technical-reference.md)
+- Benchmark scout demo: [examples/benchmark_scout/README.md](examples/benchmark_scout/README.md)
 - HF entity graph demo: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/README.md)
 - Modular-public adapter example: [examples/modular-public/README.md](examples/modular-public/README.md)
