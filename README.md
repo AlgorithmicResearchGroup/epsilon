@@ -1,4 +1,4 @@
-# Epsilon
+# ε Epsilon
 
 Epsilon is a multi-agent AI coding system for software development and large-scale agent workflows.
 
