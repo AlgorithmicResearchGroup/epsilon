@@ -1,0 +1,18 @@
+{
+  "dataset": {
+    "repo_id": "Awesome075/multi_news_parquet",
+    "repo_type": "dataset",
+    "filename": "validation.parquet"
+  },
+  "defaults": {
+    "sample_size": 100,
+    "worker_count": 8,
+    "reduce_arity": 8,
+    "shard_count": 8,
+    "max_iterations": 14,
+    "max_runtime_seconds": 180,
+    "agent_model": "openai/gpt-5.2",
+    "max_source_chars": 12000,
+    "max_ambiguities": 24
+  }
+}
