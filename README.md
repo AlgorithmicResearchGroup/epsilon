@@ -134,6 +134,29 @@ Use:
 
 ## Featured Demos
 
+### Benchmark Report
+
+The benchmark-report demo wraps the existing examples and turns them into a small, reproducible numbers package:
+
+1. it runs deterministic scale workloads for topology and worker-count comparisons
+2. it runs Benchmark Scout in extraction-only and two-pass modes
+3. it writes CSVs, charts, and a short Markdown report
+
+Run it with:
+
+```bash
+OPENAI_API_KEY=... \
+PYTHONPATH=. python examples/benchmark_report/run_demo.py \
+  --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
+  --semantic-sample-size 40 \
+  --semantic-sample-seed 17 \
+  --semantic-worker-count 8 \
+  --scale-worker-counts 2,8,24 \
+  --scale-task-count 480
+```
+
+More detail: [examples/benchmark_report/README.md](examples/benchmark_report/README.md)
+
 ### Benchmark Scout
 
 The benchmark-scout demo turns a paper corpus into a structured benchmark dataset:
@@ -183,6 +206,8 @@ More detail: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/READM
 ## Learn More
 
 - Technical reference: [docs/technical-reference.md](docs/technical-reference.md)
+- Benchmark report write-up: [docs/benchmark-report-post.md](docs/benchmark-report-post.md)
+- Benchmark report demo: [examples/benchmark_report/README.md](examples/benchmark_report/README.md)
 - Benchmark scout demo: [examples/benchmark_scout/README.md](examples/benchmark_scout/README.md)
 - HF entity graph demo: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/README.md)
 - Modular-public adapter example: [examples/modular-public/README.md](examples/modular-public/README.md)
