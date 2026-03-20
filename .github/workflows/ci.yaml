@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-mock
+
+      - name: Run core test suite
+        run: |
+          PYTHONPATH=. pytest -q \
+            tests/test_bash_tool.py \
+            tests/test_sql_tool.py \
+            tests/test_call_llm_tool.py \
+            tests/test_litellm_client.py \
+            tests/test_byoa_sdk.py \
+            tests/test_byoa_function_runner.py \
+            tests/test_byoa_runner.py \
+            tests/test_broker_reliability.py \
+            tests/test_scale_topologies.py \
+            tests/test_hf_entity_graph_demo.py \
+            tests/test_benchmark_scout_demo.py \
+            tests/test_benchmark_report_demo.py

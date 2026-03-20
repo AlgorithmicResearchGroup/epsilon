@@ -1,94 +1,57 @@
-# ε Epsilon
+# Epsilon
 
-![Epsilon](/image/header.png "Epsilon")
+![Epsilon](image/header.png "Epsilon")
 
-Epsilon is a multi-agent AI coding system for software development and large-scale agent workflows.
+Epsilon is infrastructure for structured agent workloads.
 
-It can run:
+It gives you a runtime for:
 
-- a single coding agent on one task
-- small collaborative teams with QA and fix loops
-- hierarchical team topologies for larger builds
+- single-agent coding tasks
+- multi-agent software builds
 - large manifest-backed workloads with `work_queue`, `sharded_queue`, and `map_reduce`
 
-## What It Is
+The core idea is simple: use agents where judgment is useful, keep intermediate outputs structured, and use deterministic reducers where consistency and scale matter more than open-ended reasoning.
 
-Epsilon gives you a shared runtime for LLM-powered agents that can:
+## Why It Exists
 
-- write and edit code
-- run shell commands
-- share a workspace
-- coordinate across multiple agents
-- retry failed leaf tasks
-- combine agent outputs with deterministic reducers
+Most AI tooling is built around one prompt, one model call, and one output.
 
-You can use it as a coding assistant, a multi-agent software builder, or a foundation for large-scale agent workflows.
+That breaks down when you need to:
 
-## Why It Is Useful
+- split work across many agents
+- retry failed work without restarting the whole job
+- keep intermediate artifacts machine-readable
+- selectively escalate only the cases that need deeper reasoning
+- mix LLM steps with deterministic aggregation and validation
 
-Most AI tools are good at one-shot help. They are less good at:
+Epsilon is for workloads that are too structured for a chat app and too judgment-heavy for a plain data pipeline.
 
-- splitting work across many agents
-- keeping intermediate outputs structured
-- handling failures without restarting everything
-- escalating only the tasks that need deeper reasoning
+## What You Can Build
 
-Epsilon is useful when you want a system that can do more than "send one big prompt to one model."
+- software builds with decomposition, QA, and fix loops
+- document extraction and curation workflows
+- benchmark/result harvesting across large corpora
+- manifest-backed workloads that fan out to tens, hundreds, or thousands of agent tasks
+- custom agent systems using the BYOA adapter path
 
-Examples:
+## Quickstart
 
-- build and test a software project with multiple agents
-- split a larger product task into teams or stages
-- run hundreds of independent agent tasks over a dataset
-- summarize, extract, merge, and adjudicate outputs in multiple phases
-- plug in your own agent implementation with BYOA adapter mode
-
-## What You Can Do With It
-
-### Single-Agent Coding
-
-Run one agent directly against a task:
+### 1. Create a virtualenv and install dependencies
 
 ```bash
-python runtime/agent_main.py "Build a Flask REST API with SQLite storage for a todo app"
+make install
 ```
 
-### Multi-Agent Software Builds
-
-Use orchestrators to decompose and coordinate work:
+If you prefer to do it manually:
 
 ```bash
-python orchestrate.py --pattern dag "Build a real-time chat app with Flask, Socket.IO, JWT auth, and SQLite"
-```
-
-### Large-Scale Agent Workloads
-
-Use manifest-backed topologies when you want large fan-out or hierarchical aggregation:
-
-```bash
-python orchestrate.py --pattern sharded_queue --task-manifest manifests/large-job.json
-python orchestrate.py --pattern map_reduce --task-manifest manifests/reduce-job.json
-```
-
-### Bring Your Own Agent
-
-Keep the orchestration layer and swap in your own agent implementation:
-
-```bash
-COLLAB_AGENT_MODE=adapter \
-COLLAB_AGENT_ADAPTER_ENTRY="examples/byoa/simple_run_agent.py:run" \
-python3 orchestrate.py --pattern dag "Write hello.txt with hello world"
-```
-
-## How To Use It
-
-### 1. Install Dependencies
-
-```bash
+python3 -m venv .venv
+. .venv/bin/activate
 pip install -r requirements.txt
+pip install pytest-mock
 ```
 
-Set your model credentials in the environment:
+### 2. Set model credentials
 
 ```bash
 export OPENAI_API_KEY=...
@@ -96,57 +59,80 @@ export OPENAI_API_KEY=...
 export ANTHROPIC_API_KEY=...
 ```
 
-### 2. Start With A Simple Run
+### 3. Run a single agent
 
 ```bash
-python runtime/agent_main.py "Write a Python script that converts CSV to JSON"
+PYTHONPATH=. .venv/bin/python runtime/agent_main.py \
+  "Write a Python script that converts CSV to JSON"
 ```
 
-### 3. Move Up To Multi-Agent Orchestration
+### 4. Run an orchestrated task
 
 ```bash
-python orchestrate.py --pattern dag "Build a URL shortener service"
-python orchestrate.py --pattern tree "Build an e-commerce platform"
-python orchestrate.py --pattern pipeline "Build a notes API with staged delivery"
-python orchestrate.py --pattern supervisor "Build a service with adaptive recovery"
-python orchestrate.py --pattern work_queue "Build a service with pull-based workers"
+PYTHONPATH=. .venv/bin/python orchestrate.py --pattern dag \
+  "Build a URL shortener service"
 ```
 
-To see supported patterns:
+### 5. Run the core test suite
 
 ```bash
-python orchestrate.py --list-patterns
+make test-core
 ```
 
-## Choosing A Topology
+## Topologies
 
 Use:
 
 - `dag` for parallel build work with QA/fix loops
-- `tree` for larger tasks that should be split into teams
+- `tree` for hierarchical team-style decomposition
 - `pipeline` for staged delivery
 - `supervisor` for adaptive retries and task splitting
-- `work_queue` for pull-based worker execution
+- `work_queue` for flat pull-based worker execution
 - `sharded_queue` for very large independent item sets
-- `map_reduce` for large aggregation workloads
+- `map_reduce` for hierarchical aggregation workloads
 
-`sharded_queue` and `map_reduce` are intentionally manifest-backed. They are meant for explicit large-scale workloads, not free-form task decomposition.
+`sharded_queue` and `map_reduce` are intentionally manifest-backed. They are meant for explicit high-scale workloads, not free-form decomposition from a single natural-language task.
 
-## Featured Demos
+To list supported patterns:
+
+```bash
+PYTHONPATH=. .venv/bin/python orchestrate.py --list-patterns
+```
+
+## Docker And Release Packaging
+
+Build the local image:
+
+```bash
+make docker-build
+```
+
+Run a containerized orchestrator:
+
+```bash
+docker run --rm -it \
+  -e OPENAI_API_KEY \
+  epsilon:local \
+  "Build a notes API with SQLite"
+```
+
+To publish to GHCR from CI, use the workflow in [.github/workflows/publish.yaml](.github/workflows/publish.yaml). For local publishing and release steps, see [docs/release.md](docs/release.md).
+
+## Flagship Demos
 
 ### Benchmark Report
 
-The benchmark-report demo wraps the existing examples and turns them into a small, reproducible numbers package:
+This demo produces a small benchmark bundle with charts and a short report:
 
-1. it runs deterministic scale workloads for topology and worker-count comparisons
-2. it runs Benchmark Scout in extraction-only and two-pass modes
-3. it writes CSVs, charts, and a short Markdown report
+1. deterministic topology/throughput runs
+2. Benchmark Scout in extraction-only mode
+3. Benchmark Scout in two-pass adjudication mode
 
 Run it with:
 
 ```bash
 OPENAI_API_KEY=... \
-PYTHONPATH=. python examples/benchmark_report/run_demo.py \
+PYTHONPATH=. .venv/bin/python examples/benchmark_report/run_demo.py \
   --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
   --semantic-sample-size 40 \
   --semantic-sample-seed 17 \
@@ -155,22 +141,19 @@ PYTHONPATH=. python examples/benchmark_report/run_demo.py \
   --scale-task-count 480
 ```
 
-More detail: [examples/benchmark_report/README.md](examples/benchmark_report/README.md)
-
 ### Benchmark Scout
 
-The benchmark-scout demo turns a paper corpus into a structured benchmark dataset:
+This demo turns a paper corpus into a structured benchmark dataset:
 
-1. agents read papers and extract benchmark result rows
-2. reducers detect rows that look similar but may not be truly comparable
-3. a second wave of agents adjudicates those questionable comparisons
-4. the finalizer writes benchmark JSON, CSV, and comparison judgments
+1. agents extract benchmark rows from papers
+2. reducers detect questionable cross-paper comparisons
+3. a second wave of agents adjudicates only those cases
 
 Run it with:
 
 ```bash
 OPENAI_API_KEY=... \
-PYTHONPATH=. python examples/benchmark_scout/run_demo.py \
+PYTHONPATH=. .venv/bin/python examples/benchmark_scout/run_demo.py \
   --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
   --sample-size 40 \
   --sample-mode random \
@@ -179,35 +162,36 @@ PYTHONPATH=. python examples/benchmark_scout/run_demo.py \
   --worker-count 8
 ```
 
-More detail: [examples/benchmark_scout/README.md](examples/benchmark_scout/README.md)
-
 ### HF Entity Graph
 
-The Hugging Face entity-graph demo shows a workload that is more useful than a simple fan-out pipeline:
+This demo turns raw document clusters into a curated entity graph:
 
-1. agents summarize and extract entities from many document clusters
+1. agents summarize and extract entities
 2. reducers detect ambiguous entities across documents
-3. a second wave of agents adjudicates only those ambiguous cases
-4. the finalizer writes a canonical entity graph
+3. a second wave adjudicates only the ambiguous cases
 
 Run it with:
 
 ```bash
 OPENAI_API_KEY=... \
-PYTHONPATH=. python examples/hf_entity_graph/run_demo.py \
+PYTHONPATH=. .venv/bin/python examples/hf_entity_graph/run_demo.py \
   --sample-size 100 \
   --sample-mode random \
   --sample-seed 17 \
   --worker-count 8
 ```
 
-More detail: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/README.md)
+## Documentation
 
-## Learn More
-
+- Architecture overview: [docs/architecture.md](docs/architecture.md)
 - Technical reference: [docs/technical-reference.md](docs/technical-reference.md)
-- Benchmark report write-up: [docs/benchmark-report-post.md](docs/benchmark-report-post.md)
-- Benchmark report demo: [examples/benchmark_report/README.md](examples/benchmark_report/README.md)
-- Benchmark scout demo: [examples/benchmark_scout/README.md](examples/benchmark_scout/README.md)
-- HF entity graph demo: [examples/hf_entity_graph/README.md](examples/hf_entity_graph/README.md)
-- Modular-public adapter example: [examples/modular-public/README.md](examples/modular-public/README.md)
+- Release and packaging notes: [docs/release.md](docs/release.md)
+- Future control-plane telemetry contract: [docs/control-plane-telemetry.md](docs/control-plane-telemetry.md)
+- Benchmark launch write-up: [docs/benchmark-report-post.md](docs/benchmark-report-post.md)
+- Examples index: [examples/README.md](examples/README.md)
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, test, and pull-request guidance.
+
+Contributions are also subject to [CLA.md](CLA.md).

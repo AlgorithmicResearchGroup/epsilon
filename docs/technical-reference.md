@@ -2,6 +2,12 @@
 
 This file holds the lower-level operational and implementation details that were moved out of the main `README.md`.
 
+For the higher-level launch surfaces, see:
+
+- [architecture.md](architecture.md)
+- [release.md](release.md)
+- [control-plane-telemetry.md](control-plane-telemetry.md)
+
 ## Pattern Details
 
 ### Multi-Agent With QA Loop (`dag`)
@@ -152,6 +158,8 @@ Useful env overrides:
 - `EXECUTOR=direct_wiki`
 
 ## Architecture
+
+For the current overview diagrams and component framing, start with [architecture.md](architecture.md). The ASCII sketch below is kept here as an implementation-oriented reference.
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
