@@ -118,49 +118,7 @@ docker run --rm -it \
 
 To publish to GHCR from CI, use the workflow in [.github/workflows/publish.yaml](.github/workflows/publish.yaml). For local publishing and release steps, see [docs/release.md](docs/release.md).
 
-## Flagship Demos
-
-### Benchmark Report
-
-This demo produces a small benchmark bundle with charts and a short report:
-
-1. deterministic topology/throughput runs
-2. Benchmark Scout in extraction-only mode
-3. Benchmark Scout in two-pass adjudication mode
-
-Run it with:
-
-```bash
-OPENAI_API_KEY=... \
-PYTHONPATH=. .venv/bin/python examples/benchmark_report/run_demo.py \
-  --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
-  --semantic-sample-size 40 \
-  --semantic-sample-seed 17 \
-  --semantic-worker-count 8 \
-  --scale-worker-counts 2,8,24 \
-  --scale-task-count 480
-```
-
-### Benchmark Scout
-
-This demo turns a paper corpus into a structured benchmark dataset:
-
-1. agents extract benchmark rows from papers
-2. reducers detect questionable cross-paper comparisons
-3. a second wave of agents adjudicates only those cases
-
-Run it with:
-
-```bash
-OPENAI_API_KEY=... \
-PYTHONPATH=. .venv/bin/python examples/benchmark_scout/run_demo.py \
-  --corpus-root /home/matt/gcs-downloads/s2orc_computer_science_7_14_parquet \
-  --sample-size 40 \
-  --sample-mode random \
-  --sample-seed 17 \
-  --keyword-profile text_llm_eval \
-  --worker-count 8
-```
+## Demos
 
 ### HF Entity Graph
 
@@ -181,13 +139,13 @@ PYTHONPATH=. .venv/bin/python examples/hf_entity_graph/run_demo.py \
   --worker-count 8
 ```
 
+Additional examples exist under [examples/README.md](examples/README.md). Some of them rely on local research corpora and are intentionally not featured in the top-level launch README.
+
 ## Documentation
 
 - Architecture overview: [docs/architecture.md](docs/architecture.md)
 - Technical reference: [docs/technical-reference.md](docs/technical-reference.md)
 - Release and packaging notes: [docs/release.md](docs/release.md)
-- Future control-plane telemetry contract: [docs/control-plane-telemetry.md](docs/control-plane-telemetry.md)
-- Benchmark launch write-up: [docs/benchmark-report-post.md](docs/benchmark-report-post.md)
 - Examples index: [examples/README.md](examples/README.md)
 
 ## Contributing
