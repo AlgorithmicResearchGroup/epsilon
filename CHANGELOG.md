@@ -4,6 +4,8 @@ All notable changes to Epsilon should be documented here.
 
 ## Unreleased
 
+## v0.1.0 - 2026-03-20
+
 ### Added
 
 - Launch-focused README with quickstart, topology guidance, Docker packaging notes, and flagship demo entrypoints.

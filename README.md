@@ -195,3 +195,7 @@ PYTHONPATH=. .venv/bin/python examples/hf_entity_graph/run_demo.py \
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, test, and pull-request guidance.
 
 Contributions are also subject to [CLA.md](CLA.md).
+
+## License
+
+Epsilon is licensed under [Apache 2.0](LICENSE).
