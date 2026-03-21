@@ -50,6 +50,11 @@ PATTERN_REGISTRY: Dict[str, PatternSpec] = {
         entry_script="orchestrators/map_reduce_orchestrator.py",
         description="Manifest-backed map/reduce tree with fixed-arity hierarchical aggregation.",
     ),
+    "population_search": PatternSpec(
+        pattern="population_search",
+        entry_script="orchestrators/population_search_orchestrator.py",
+        description="Iterative population search with generation scoring, briefs, and recursive improvement.",
+    ),
 }
 
 DEFAULT_PATTERN = "dag"
@@ -71,6 +76,9 @@ PATTERN_ALIASES: Dict[str, str] = {
     "sharded-queue": "sharded_queue",
     "mapreduce": "map_reduce",
     "map-reduce": "map_reduce",
+    "population": "population_search",
+    "evolution": "population_search",
+    "evolutionary": "population_search",
 }
 
 

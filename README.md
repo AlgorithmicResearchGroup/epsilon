@@ -8,7 +8,7 @@ It gives you a runtime for:
 
 - single-agent coding tasks
 - multi-agent software builds
-- large manifest-backed workloads with `work_queue`, `sharded_queue`, and `map_reduce`
+- large manifest-backed workloads with `work_queue`, `sharded_queue`, `map_reduce`, and `population_search`
 
 The core idea is simple: use agents where judgment is useful, keep intermediate outputs structured, and use deterministic reducers where consistency and scale matter more than open-ended reasoning.
 
@@ -90,6 +90,7 @@ Use:
 - `work_queue` for flat pull-based worker execution
 - `sharded_queue` for very large independent item sets
 - `map_reduce` for hierarchical aggregation workloads
+- `population_search` for recursive improvement loops over the same task
 
 `sharded_queue` and `map_reduce` are intentionally manifest-backed. They are meant for explicit high-scale workloads, not free-form decomposition from a single natural-language task.
 
@@ -119,6 +120,25 @@ docker run --rm -it \
 To publish to GHCR from CI, use the workflow in [.github/workflows/publish.yaml](.github/workflows/publish.yaml). For local publishing and release steps, see [docs/release.md](docs/release.md).
 
 ## Demos
+
+### Population Search CSV
+
+This demo shows recursive improvement on one public CPU-only task:
+
+1. many agents optimize the same CSV aggregation function in parallel
+2. Epsilon scores every candidate deterministically
+3. a generation brief captures what worked
+4. the next generation gets the best solutions as context
+
+Run it with:
+
+```bash
+OPENAI_API_KEY=... \
+PYTHONPATH=. .venv/bin/python examples/population_search_csv/run_demo.py \
+  --population-size 8 \
+  --max-generations 4 \
+  --worker-count 4
+```
 
 ### HF Entity Graph
 

@@ -123,7 +123,7 @@ def parse_args():
         default=AUTO_PATTERN,
         help=(
             "Collaboration pattern (e.g. dag, tree, pipeline, supervisor, work_queue, "
-            "sharded_queue, map_reduce, fanout, hierarchy, auto). Defaults to auto."
+            "sharded_queue, map_reduce, population_search, fanout, hierarchy, auto). Defaults to auto."
         ),
     )
     parser.add_argument(

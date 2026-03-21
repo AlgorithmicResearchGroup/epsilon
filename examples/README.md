@@ -4,7 +4,20 @@ These are the main example workloads shipped with Epsilon.
 
 ## Recommended Starting Points
 
-### 1. Benchmark Report
+### 1. Population Search CSV
+
+Best if you want a public recursive-improvement example.
+
+It:
+
+- runs many attempts of the same optimization task in parallel
+- scores them deterministically
+- produces a generation brief from the leaders
+- feeds the best solutions into the next generation
+
+See [population_search_csv/README.md](population_search_csv/README.md).
+
+### 2. Benchmark Report
 
 Best if you want a numbers-driven overview of the system.
 
@@ -22,7 +35,7 @@ Outputs:
 
 See [benchmark_report/README.md](benchmark_report/README.md).
 
-### 2. Benchmark Scout
+### 3. Benchmark Scout
 
 Best if you want to see a real two-pass agent workflow over a large paper corpus.
 
@@ -34,7 +47,7 @@ It:
 
 See [benchmark_scout/README.md](benchmark_scout/README.md).
 
-### 3. HF Entity Graph
+### 4. HF Entity Graph
 
 Best if you want a document-to-graph example.
 
