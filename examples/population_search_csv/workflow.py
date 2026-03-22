@@ -123,7 +123,7 @@ class DemoConfig:
     worker_count: int = 4
     max_iterations: int = 18
     max_runtime_seconds: int = 180
-    agent_model: str = "openai/gpt-5.2"
+    agent_model: str = "openai/gpt-5.4"
     seed: int = 17
     correctness_rows: tuple[int, int] = (80, 220)
     performance_rows: tuple[int, int] = (6000, 12000)
